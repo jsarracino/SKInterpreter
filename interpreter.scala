@@ -1,12 +1,13 @@
 package SK.semantics
 
-import SK.syntax
-import SK.errors
+import SK.syntax._
+import SK.errors._
 
-object Interpreter extends App {
+object Interpreter extends scala.App {
   var print = true
 
-  val init : Result = App(I(), S()) // parse here
+  //val init : Result = App(I(), S()) // parse here
+  val init : Result = App(App(App(App(App(K(), K()), K()), S()), K()), S())
 
   // small step eval, invoked on the arguments of an App. transition from
   // Result and Result to Result.
@@ -15,24 +16,25 @@ object Interpreter extends App {
     case App(func1, arg1) ⇒ App(eval(func1, arg1), arg)
 
     // S rules
-    case S0() ⇒ S1(arg)
+    case S() ⇒ S1(arg)
     case S1(prev) ⇒ S2(prev, arg)
     // complicated, see syntax document
     case S2(prev, next) ⇒ App(App(prev, arg), App(next, arg))
 
     // K rules
-    case K0() ⇒ K1(arg)
+    case K() ⇒ K1(arg)
     case K1(arg) ⇒ arg
     // I rule
     case I() ⇒ arg
     //case _ ⇒ throw NoEvaluationRule
   }
 
-  // loop until done
-  var current : Result = init
-  while (current <:< App) {
-    current match {
-      case // not doable, oops
-    }
+  def evaluate(curr: Result) : Symbol = curr match {
+    case App(lhs, rhs) ⇒ evaluate(eval(lhs, rhs))
+    case res:Symbol ⇒ res
   }
+
+  val result = evaluate(init)
+
+  println(result)
 }

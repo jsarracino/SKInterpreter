@@ -22,9 +22,9 @@ sealed abstract class Symbol extends Result
 //         /  \   \   \           /    \      /    \
 //        S   fst snd arg       fst   arg    snd   arg
 //
-case class S0() extends Symbol
-case class S1(fst : Symbol) extends Symbol
-case class S2(fst : Symbol, snd: Symbol) extends Symbol
+case class S() extends Symbol
+case class S1(fst : Result) extends Symbol
+case class S2(fst : Result, snd: Result) extends Symbol
 
 
 // K combinator takes in two functions, takes the first.
@@ -37,7 +37,7 @@ case class S2(fst : Symbol, snd: Symbol) extends Symbol
 //      K   tk  rej             tk
 //
 case class K() extends Symbol
-case class K0(tk: Symbol) extends Symbol
+case class K1(tk: Result) extends Symbol
 
 // I(dentity) combinator takes in one function, returns it.
 // In tree terms:
