@@ -1,10 +1,10 @@
 package SK.syntax
 
-// everything is a tree... we use options to indicate
-// that computation is done/undone.
+// model everything as function applications, and symbols. curry via intermediate
+// symbols.
+sealed abstract class Result
+sealed abstract class Symbol extends Result
 
-sealed abstract class Tree
-type Basic = Option[Tree]
 
 // S combinator takes in three functions, passes the third
 // as argument to the first two.
@@ -22,7 +22,9 @@ type Basic = Option[Tree]
 //         /  \   \   \           /    \      /    \
 //        S   fst snd arg       fst   arg    snd   arg
 //
-case class S(fst: Basic, snd: Basic, arg: Basic) extends Tree
+case class S0() extends Symbol
+case class S1(fst : Symbol) extends Symbol
+case class S2(fst : Symbol, snd: Symbol) extends Symbol
 
 
 // K combinator takes in two functions, takes the first.
@@ -34,7 +36,8 @@ case class S(fst: Basic, snd: Basic, arg: Basic) extends Tree
 //       /  \   \
 //      K   tk  rej             tk
 //
-case class K(tk: Basic, rej: Basic) extends Tree
+case class K() extends Symbol
+case class K0(tk: Symbol) extends Symbol
 
 // I(dentity) combinator takes in one function, returns it.
 // In tree terms:
@@ -45,4 +48,7 @@ case class K(tk: Basic, rej: Basic) extends Tree
 //     /    \
 //    I     inn                 inn
 //
-case class I(inn: Basic) extends Tree
+case class I() extends Symbol
+
+// actual applications
+case class App(lhs : Result, rhs: Result) extends Result

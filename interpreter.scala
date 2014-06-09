@@ -1,29 +1,38 @@
 package SK.semantics
 
 import SK.syntax
-import scala.annotation.tailrec
+import SK.errors
 
-object Interpreter {
+object Interpreter extends App {
   var print = true
 
+  val init : Result = App(I(), S()) // parse here
 
-  @tailrec def eval(expr: Tree) : Tree {
-    val res = expr match {
-      case I(inner) ⇒ inner match {case Some(tre) ⇒ eval(tre); _ ⇒ expr}
-      case K(tk, rej) ⇒ tk match {
-        case Some(tre) ⇒ if (rej.isEmpty) expr else eval(tre)
-        case _ ⇒ expr
-      }
+  // small step eval, invoked on the arguments of an App. transition from
+  // Result and Result to Result.
+  def eval(func: Result, arg:Result) : Result = func match {
+    // if LHS is application, recurse and package
+    case App(func1, arg1) ⇒ App(eval(func1, arg1), arg)
 
-      // the actual hard one...
-      case S(lhs, rhs, arg) ⇒ {
-        val innerRes = for {
-          rite <- lhs
-          left <- rhs
-          app <- arg // here
-        }
-      }
+    // S rules
+    case S0() ⇒ S1(arg)
+    case S1(prev) ⇒ S2(prev, arg)
+    // complicated, see syntax document
+    case S2(prev, next) ⇒ App(App(prev, arg), App(next, arg))
 
+    // K rules
+    case K0() ⇒ K1(arg)
+    case K1(arg) ⇒ arg
+    // I rule
+    case I() ⇒ arg
+    //case _ ⇒ throw NoEvaluationRule
+  }
+
+  // loop until done
+  var current : Result = init
+  while (current <:< App) {
+    current match {
+      case // not doable, oops
     }
   }
 }
